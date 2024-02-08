@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { TransformResponseInterceptor } from 'common/interceptors';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { createSwaggerDoc } from 'common/swagger/v1';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -15,6 +16,8 @@ async function bootstrap() {
     app.enableVersioning({
         type: VersioningType.URI,
     });
+
+    createSwaggerDoc(app);
 
     const PORT = configService.get<number>('PORT');
     app.listen(PORT, () => {

@@ -2,10 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Interval } from '@nestjs/schedule';
-import { AxiosError, AxiosRequestConfig, HttpStatusCode } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import { AppConfig } from 'common/interfaces';
 import { TranslateDTO } from './dto';
-import { ResponseIAMToken, ResponseListLanguages, ResponseTranslate, YcBadResponse } from './interfaces';
+import { YCResponseIAMToken, YCResponseListLanguages, YCResponseTranslate, YcBadResponse } from './interfaces';
 
 const YC_TOKEN_REFRESH_INTERVAL = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
 
@@ -22,16 +22,17 @@ export class YcService {
         private readonly httpService: HttpService,
         private readonly configService: ConfigService<AppConfig>,
     ) {
-        this.fetchIamToken().then(() => {
-            this.fetchSupportedLanguages();
-        });
+        this.fetchIamToken()
+            .then(() => this.fetchSupportedLanguages())
+            .catch((e) => this._logger.error(e));
+
         this.folderId = this.configService.get('YC_FOLDER_ID');
         this.ycTranslateApiUrlV2 = this.configService.get('YC_TRANSLATE_API_V2');
     }
     /**
      * @see {@link https://cloud.yandex.ru/ru/docs/translate/api-ref/Translation/translate}
      */
-    public async translate(dto: TranslateDTO): Promise<ResponseTranslate> {
+    public async translate(dto: TranslateDTO): Promise<YCResponseTranslate> {
         try {
             const [translateApiUrl, body, config] = this.prepareDefaultRequest('translate');
 
@@ -39,7 +40,7 @@ export class YcService {
             body.targetLanguageCode = dto.targetLanguageCode;
             body.texts = dto.texts;
 
-            const response = await this.httpService.axiosRef.post<ResponseTranslate>(translateApiUrl, body, config);
+            const response = await this.httpService.axiosRef.post<YCResponseTranslate>(translateApiUrl, body, config);
 
             return response.data;
         } catch (error: AxiosError | any) {
@@ -57,7 +58,7 @@ export class YcService {
     public async fetchSupportedLanguages(): Promise<void> {
         try {
             const [supportedLanguagesApiUrl, body, config] = this.prepareDefaultRequest('languages');
-            const response = await this.httpService.axiosRef.post<ResponseListLanguages>(
+            const response = await this.httpService.axiosRef.post<YCResponseListLanguages>(
                 supportedLanguagesApiUrl,
                 body,
                 config,
@@ -92,7 +93,7 @@ export class YcService {
             const oauthToken = this.configService.get('YC_OAUTH_TOKEN');
             const body = { yandexPassportOauthToken: oauthToken };
 
-            const { data } = await this.httpService.axiosRef.post<ResponseIAMToken>(ycUrl, body);
+            const { data } = await this.httpService.axiosRef.post<YCResponseIAMToken>(ycUrl, body);
 
             this.iamToken = data.iamToken;
             this._logger.log('iam token updated successfully');

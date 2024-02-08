@@ -1,14 +1,14 @@
-interface ResponseIAMToken {
+interface YCResponseIAMToken {
     iamToken: string;
     expiresAt: string;
 }
 
-interface ResponseListLanguages {
+interface YCResponseListLanguages {
     languages: Array<{ code: string; name: string }>;
 }
 
-interface ResponseTranslate {
+interface YCResponseTranslate {
     translations: Array<{ text: string; detectedLanguageCode?: string }>;
 }
 
-export type { ResponseIAMToken, ResponseListLanguages, ResponseTranslate };
+export type { YCResponseIAMToken, YCResponseListLanguages, YCResponseTranslate };
