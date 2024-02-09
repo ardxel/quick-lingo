@@ -5,7 +5,7 @@ import { Interval } from '@nestjs/schedule';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { AppConfig } from 'common/interfaces';
 import { TranslateDTO } from './dto';
-import { YCResponseIAMToken, YCResponseListLanguages, YCResponseTranslate, YcBadResponse } from './interfaces';
+import { YCResponseIAMToken, YCResponseSupportedLanguageList, YCResponseTranslate, YcBadResponse } from './interfaces';
 
 const YC_TOKEN_REFRESH_INTERVAL = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
 
@@ -14,8 +14,7 @@ export class YcService {
     private readonly _logger: Logger = new Logger(YcService.name);
     private iamToken: string;
     private folderId: string;
-    private supportedLanguagesSet: Set<string>;
-
+    private supportedLanguages: YCResponseSupportedLanguageList['languages'];
     private ycTranslateApiUrlV2: string;
 
     constructor(
@@ -29,6 +28,7 @@ export class YcService {
         this.folderId = this.configService.get('YC_FOLDER_ID');
         this.ycTranslateApiUrlV2 = this.configService.get('YC_TRANSLATE_API_V2');
     }
+
     /**
      * @see {@link https://cloud.yandex.ru/ru/docs/translate/api-ref/Translation/translate}
      */
@@ -58,17 +58,13 @@ export class YcService {
     public async fetchSupportedLanguages(): Promise<void> {
         try {
             const [supportedLanguagesApiUrl, body, config] = this.prepareDefaultRequest('languages');
-            const response = await this.httpService.axiosRef.post<YCResponseListLanguages>(
+            const response = await this.httpService.axiosRef.post<YCResponseSupportedLanguageList>(
                 supportedLanguagesApiUrl,
                 body,
                 config,
             );
-            const { languages } = response.data;
-            const supportedLanguagesSet = new Set<string>();
 
-            languages.forEach(({ code }) => supportedLanguagesSet.add(code));
-
-            this.supportedLanguagesSet = supportedLanguagesSet;
+            this.supportedLanguages = response.data.languages;
 
             this._logger.log('Supported languages fetched successfully');
         } catch (error: any) {
@@ -79,6 +75,14 @@ export class YcService {
                 throw error;
             }
         }
+    }
+
+    public async getSupportedLanguageList(): Promise<YCResponseSupportedLanguageList> {
+        if (!this.supportedLanguages) await this.fetchSupportedLanguages();
+
+        return {
+            languages: this.supportedLanguages,
+        };
     }
 
     /**
@@ -102,8 +106,20 @@ export class YcService {
             throw error;
         }
     }
-
-    private prepareDefaultRequest(urlSuffix: string): [string, Record<string, any>, AxiosRequestConfig] {
+    /**
+     * @param urlSuffix - endpoints in yandex cloud REST API translation
+     * @see {@link https://cloud.yandex.ru/ru/docs/translate/api-ref/Translation/}
+     *
+     * @description
+     * prepare default request data  for workflow to yandex cloud api
+     * @returns tuple array:
+     * url - yandex cloud api url
+     * body - data request (mutable)
+     * config - axios request config with default headers which already contain Authorization and content-type (mutable)
+     */
+    private prepareDefaultRequest(
+        urlSuffix: 'detect' | 'languages' | 'translate',
+    ): [string, Record<string, any>, AxiosRequestConfig] {
         const url = this.ycTranslateApiUrlV2 + urlSuffix;
         const body: Record<string, string> = {};
 
