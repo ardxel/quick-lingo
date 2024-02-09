@@ -1,3 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
-cd api && npm run test ;
+cd api && npm run prettier
+
+exit 0

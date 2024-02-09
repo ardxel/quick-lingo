@@ -12,6 +12,7 @@
         "start:debug": "npx nest start --debug --watch",
         "start:prod": "node dist/main",
         "lint": "npx eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+        "prettier": "npx prettier --write ./",
         "test": "npx jest",
         "test:watch": "npx jest --watch",
         "test:cov": "npx jest --coverage",
