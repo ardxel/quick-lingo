@@ -17,6 +17,8 @@ async function bootstrap() {
         type: VersioningType.URI,
     });
 
+    app.enableCors({ origin: '*' });
+
     createSwaggerDoc(app);
 
     const PORT = configService.get<number>('PORT');

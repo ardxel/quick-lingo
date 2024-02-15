@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { HttpStatusCode } from 'axios';
 import { TranslateDTO } from './dto';
@@ -24,7 +24,7 @@ export class YcController {
         return await this.ycService.translate(dto);
     }
 
-    @Post('languages')
+    @Get('languages')
     @HttpCode(HttpStatusCode.Ok)
     @ApiOkResponse({
         type: ResponseSupportedLanguageList,
