@@ -20,8 +20,8 @@ export class YcController {
         type: ResponseTranslate,
         description: 'the text was successfully translated and the translation was returned',
     })
-    async translate(@Body() dto: TranslateDTO): Promise<YCResponseTranslate> {
-        return await this.ycService.translate(dto);
+    async translateSimple(@Body() dto: TranslateDTO): Promise<YCResponseTranslate> {
+        return await this.ycService.translateSimple(dto);
     }
 
     @Get('languages')
@@ -31,6 +31,6 @@ export class YcController {
         description: 'gets a list of supported languages',
     })
     async supportedLanguages(): Promise<YCResponseSupportedLanguageList> {
-        return await this.ycService.getSupportedLanguageList();
+        return await this.ycService.fetchSupportedLanguages();
     }
 }
