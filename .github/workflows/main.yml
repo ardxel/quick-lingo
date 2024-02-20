@@ -1,0 +1,56 @@
+name: Run Tests on Push
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js (Backend)
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Change to Backend Directory
+        run: cd api 
+
+      - name: Install Backend Dependencies
+        run: npm install
+        working-directory: ./api
+
+      - name: Run Api Tests
+        run: npm test
+        working-directory: ./api
+
+  mobile-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js (React native)
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Change to mobile Directory
+        run: cd frontend
+
+      - name: Install mobile app Dependencies
+        run: npm install
+        working-directory: ./mobile
+
+      - name: Run Mobile Tests
+        run: npm test
+        working-directory: ./mobile
