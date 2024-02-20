@@ -12,7 +12,7 @@ class ResponseTranslation {
     detectedLanguageCode?: string;
 }
 
-export class ResponseTranslate {
+export class SwaggerResponseTranslate {
     @IsArray()
     @ArrayNotEmpty()
     @Type(() => ResponseTranslation)

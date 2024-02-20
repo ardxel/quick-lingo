@@ -1,2 +1,2 @@
-export * from './yc-response.interface';
-export * from './yc-bad-response.interface';
+export * from './yandex-cloud';
+export * from './translate-gpt.response';

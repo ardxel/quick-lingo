@@ -5,4 +5,5 @@ export interface AppEnvConfig {
     YC_OAUTH_TOKEN: string;
     YC_FOLDER_ID: string;
     YC_GPT_MODEL_API_V1: string;
+    YC_GPT_MODEL_TRANSLATE_SYSTEM_TEXT: string;
 }

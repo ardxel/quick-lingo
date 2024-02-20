@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { YcConfigService } from '../yc.config.service';
 import { YcService } from '../yc.service';
 import { YcTranslateService } from '../yc.translate.service';
+import { YcTranslateGptService } from '../yc.translate-gpt.service';
 
 jest.mock('../yc.config.service.ts');
 jest.mock('../yc.translate.service.ts');
@@ -17,7 +18,7 @@ describe('YcService', () => {
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [YcService, YcConfigService, YcTranslateService, ConfigService],
+            providers: [YcService, YcConfigService, YcTranslateService, ConfigService, YcTranslateGptService],
             imports: [HttpModule],
         }).compile();
 

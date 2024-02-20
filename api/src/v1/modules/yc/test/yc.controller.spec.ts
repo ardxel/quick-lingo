@@ -6,9 +6,10 @@ import { YcController } from '../yc.controller';
 import { YcService } from '../yc.service';
 import { YcTranslateService } from '../yc.translate.service';
 
+jest.mock('../yc.service.ts');
 jest.mock('../yc.config.service.ts');
 jest.mock('../yc.translate.service.ts');
-jest.mock('../yc.service.ts');
+jest.mock('../yc.translate-gpt.service.ts');
 
 const mockRequestTranslateData = {
     texts: ['translate'],
@@ -17,8 +18,8 @@ const mockRequestTranslateData = {
 };
 
 const mockResponseTranslateData = { translations: [{ text: 'translate', detectedLanguageCode: 'en' }] };
-
 const mockResponseSupportedLanguagesData = { languages: [{ code: 'en', language: 'english' }] };
+const mockResponseTranslateGptData = { translations: { texts: ['hello', 'world'] } };
 
 describe('YcController', () => {
     let ycController: YcController;
@@ -35,16 +36,16 @@ describe('YcController', () => {
         ycService = module.get<YcService>(YcService);
     });
 
-    it('should be defined', () => {
+    test('should be defined', () => {
         expect(ycController).toBeDefined();
     });
 
     describe('Test translateSimple', () => {
-        let responseData;
+        let responseTranslateData;
 
         beforeEach(async () => {
             jest.clearAllMocks();
-            responseData = await ycController.translateSimple(mockRequestTranslateData);
+            responseTranslateData = await ycController.translateSimple(mockRequestTranslateData);
         });
 
         test('should be called 1 time', () => {
@@ -56,7 +57,7 @@ describe('YcController', () => {
         });
 
         test('should return translated data', () => {
-            expect(responseData).toEqual(mockResponseTranslateData);
+            expect(responseTranslateData).toEqual(mockResponseTranslateData);
         });
     });
 
@@ -64,7 +65,6 @@ describe('YcController', () => {
         let responseSupportedLanguages;
 
         beforeEach(async () => {
-            jest.clearAllMocks();
             responseSupportedLanguages = await ycController.supportedLanguages();
         });
 
@@ -74,6 +74,22 @@ describe('YcController', () => {
 
         test('shoud return supported languages', () => {
             expect(responseSupportedLanguages).toEqual(mockResponseSupportedLanguagesData);
+        });
+    });
+
+    describe('Test translate gpt', () => {
+        let responseTranslateData;
+
+        beforeEach(async () => {
+            responseTranslateData = await ycController.translateGpt(mockRequestTranslateData);
+        });
+
+        test('shoud be called 1 time', () => {
+            expect(ycService.translateGpt).toBeCalledTimes(1);
+        });
+
+        test('shoud return translated data', () => {
+            expect(responseTranslateData).toEqual(mockResponseTranslateGptData);
         });
     });
 });

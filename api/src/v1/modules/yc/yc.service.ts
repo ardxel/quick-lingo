@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { TranslateDTO } from './dto';
+import { TranslateDTO, TranslateGptDTO } from './dto';
 import { YcConfigService } from './yc.config.service';
 import { YcTranslateService } from './yc.translate.service';
+import { YcTranslateGptService } from './yc.translate-gpt.service';
 
 const YC_TOKEN_REFRESH_INTERVAL = 9 * 60 * 60 * 1000; // 9 hours in milliseconds
 
@@ -11,12 +12,17 @@ export class YcService {
     constructor(
         private readonly ycConfigService: YcConfigService,
         private readonly ycTranslateService: YcTranslateService,
+        private readonly ycTranslateGptService: YcTranslateGptService,
     ) {
         this.fetchIamToken();
     }
 
     public translateSimple(dto: TranslateDTO) {
         return this.ycTranslateService.translate(dto);
+    }
+
+    public translateGpt(dto: TranslateGptDTO) {
+        return this.ycTranslateGptService.translateWithAI(dto);
     }
 
     public fetchSupportedLanguages() {

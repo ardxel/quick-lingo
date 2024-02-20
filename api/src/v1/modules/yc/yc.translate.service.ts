@@ -57,7 +57,6 @@ export class YcTranslateService {
 
             return response.data;
         } catch (error: any) {
-            console.log(error);
             if (this.isYandexException(error)) {
                 this.handleYandexException(error);
             } else {

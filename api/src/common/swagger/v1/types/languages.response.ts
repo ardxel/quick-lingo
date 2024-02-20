@@ -12,7 +12,7 @@ export class ResponseSupportedLanguage {
     name: string;
 }
 
-export class ResponseSupportedLanguageList {
+export class SwaggerResponseSupportedLanguageList {
     @IsArray()
     @IsNotEmpty()
     @Type(() => ResponseSupportedLanguage)
