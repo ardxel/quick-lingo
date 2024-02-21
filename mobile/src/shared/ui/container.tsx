@@ -1,7 +1,7 @@
 import { PropsWithChildren } from "react";
 import { ViewStyle } from "react-native";
 import { StyleProp, StyleSheet, View } from "react-native";
-import { color } from "share/vars";
+import { color } from "shared/vars";
 
 type Props = {
   style?: StyleProp<ViewStyle>;

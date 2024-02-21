@@ -1,12 +1,12 @@
 import { asyncStorageApi } from "./api";
-import { IAppAsyncStorage } from "./type";
+import { IAppAsyncStorage } from "./storage.interface";
 
-export const useSafeAsyncStorage = function <T>(key: keyof IAppAsyncStorage) {
+export const useSafeAsyncStorage = function <T extends keyof IAppAsyncStorage = keyof IAppAsyncStorage>(key: T) {
   const get = async () => {
-    return await asyncStorageApi.get<T>(key);
+    return await asyncStorageApi.get<IAppAsyncStorage[T]>(key);
   };
 
-  const set = async (value: T) => {
+  const set = async (value: IAppAsyncStorage[T]) => {
     await asyncStorageApi.set(key, value);
   };
 
@@ -14,7 +14,7 @@ export const useSafeAsyncStorage = function <T>(key: keyof IAppAsyncStorage) {
     await asyncStorageApi.remove(key);
   };
 
-  const merge = async (value: T) => {
+  const merge = async (value: IAppAsyncStorage[T]) => {
     await asyncStorageApi.merge(key, value);
   };
 

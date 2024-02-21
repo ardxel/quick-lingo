@@ -45,6 +45,14 @@ class AsyncStorageApi {
     }
   }
 
+  public async clear() {
+    try {
+      await this.asyncStorage.clear();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   private stringify(value: unknown): string {
     if (typeof value === "string") return value;
     else return JSON.stringify(value);

@@ -4,4 +4,5 @@ export const color = {
   dimgrey: "#696969",
   cornsilk: "#fff8dc",
   chocolate: "#d2691e",
+  burlywood: "#deb887",
 } as const;
