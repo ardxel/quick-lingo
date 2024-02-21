@@ -45,7 +45,7 @@ jobs:
           node-version: 20
 
       - name: Change to mobile Directory
-        run: cd frontend
+        run: cd mobile
 
       - name: Install mobile app Dependencies
         run: npm install
