@@ -21,5 +21,8 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["@typescript-eslint", "react", "react-native"],
-  rules: {},
+  rules: {
+    "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+  },
 };

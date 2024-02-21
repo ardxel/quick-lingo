@@ -2,5 +2,5 @@ export type IDeck = {
   name: string;
   sourceLanguage: string;
   targetLanguage: string;
-  cards: import("./card").Card[];
+  cards: import("shared/models").ICard[];
 };
