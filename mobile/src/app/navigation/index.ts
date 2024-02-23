@@ -1,2 +1,3 @@
 export * from "./home.tab";
-export * from "./navigation";
+export * from "./screens.interface";
+// export * from "./navigation";

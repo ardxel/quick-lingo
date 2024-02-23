@@ -3,11 +3,12 @@ import { useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
 import { color, font } from "shared/vars";
+import { useDeckScreenContext } from "./index";
 
 export const HomeDeckListHeader = () => {
-  const navigation = useNavigation();
   const [inputSearchShow, setInputSearchShown] = useState<boolean>(false);
-  const [input, setInput] = useState<string>("");
+  const { searchDeckInput, onSearhDeckInput } = useDeckScreenContext();
+  const navigation = useNavigation();
 
   return (
     <View style={s.head}>
@@ -15,17 +16,26 @@ export const HomeDeckListHeader = () => {
         <View style={s.searchInput}>
           <MDIcon name="search" size={25} />
           <TextInput
-            onChangeText={setInput}
-            value={input}
+            onChangeText={onSearhDeckInput}
+            value={searchDeckInput}
             style={{ flex: 1, fontFamily: font.Montserrat.medium, fontSize: 20 }}
           />
-          <Pressable onPress={() => setInputSearchShown(false)}>
+          <Pressable
+            onPress={() => {
+              onSearhDeckInput("");
+              setInputSearchShown(false);
+            }}>
             <MDIcon name="close" size={25} />
           </Pressable>
         </View>
       ) : null}
       <View style={[s.buttons, inputSearchShow ? null : { position: "absolute", right: 10, top: 10 }]}>
-        <Pressable style={s.btn} onPress={() => setInputSearchShown((prev) => !prev)}>
+        <Pressable
+          style={s.btn}
+          onPress={() => {
+            setInputSearchShown((previous) => !previous);
+            onSearhDeckInput("");
+          }}>
           <MDIcon name="search" size={35} />
         </Pressable>
         <Pressable

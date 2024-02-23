@@ -8,4 +8,8 @@ export type ICard = {
    * the source text with additional translations
    */
   expanded: boolean;
+
+  createdAt: Date | string;
+
+  playCount: number;
 };

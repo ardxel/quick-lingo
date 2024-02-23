@@ -19,6 +19,9 @@ export const useLingoDeck = (deckName: string) => {
 
   const addCard = async (card: ICard) => {
     if (!deck || !deckName) return;
+    const isExist = Boolean(deck.cards.find((c) => c.sourceText === card.sourceText));
+
+    if (isExist) return;
 
     const deckMapCopy: typeof deckMap = JSON.parse(JSON.stringify(deckMap));
     deckMapCopy[deckName].cards.push(card);
@@ -28,5 +31,21 @@ export const useLingoDeck = (deckName: string) => {
     setDeck(updatedDeckMap[deckName]);
   };
 
-  return { addCard, deck };
+  const deleteCards = async (...cards: ICard[]) => {
+    if (!deck || !deckName) return;
+
+    const deckMapCopy: typeof deckMap = JSON.parse(JSON.stringify(deckMap));
+
+    const updatedCards = deckMapCopy[deckName].cards.filter(
+      (card) => !cards.find((c) => c.sourceText === card.sourceText),
+    );
+
+    deckMapCopy[deckName].cards = updatedCards;
+
+    const updatedDeckMap = await update(deckMapCopy);
+
+    setDeck(updatedDeckMap[deckName]);
+  };
+
+  return { addCard, deck, deleteCards };
 };

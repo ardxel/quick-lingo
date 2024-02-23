@@ -1,11 +1,12 @@
+import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
+import { SelectCountry } from "features/language";
 import { Formik } from "formik";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ResponsePayloadLanguageList, api } from "shared/api";
-import { IAppAsyncStorage, useSafeAsyncStorage } from "shared/store";
+import { useLingoDeckMap } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
-import { SelectCountry } from "./selectCountry";
 
 export const CreateDeckForm = () => {
   useQuery({
@@ -13,18 +14,22 @@ export const CreateDeckForm = () => {
     queryFn: () => api.get<ResponsePayloadLanguageList>("yc/languages"),
     select: (response) => response.data.payload.languages,
   });
-  const { get: getDeckMap, set: setDeckMap } = useSafeAsyncStorage<IAppAsyncStorage["@decks"]>("@decks");
+  const { deckMap, update: updateDeckMap } = useLingoDeckMap();
+  const navigation = useNavigation();
 
   return (
     <Formik
       validate={async (values) => {
         const errors: { [P in keyof typeof values]?: string } = {};
 
-        if (!values.deckName) {
+        if (!values.deckName || values.deckName.length < 4) {
           errors.deckName = "deck name must have 4 symbols";
         }
 
-        const deckMap = await getDeckMap();
+        if (values.deckName.length > 10) {
+          errors.deckName = "deck name length limit 10 symbols";
+        }
+
         if (deckMap && Object.keys(deckMap).includes(values.deckName)) {
           errors.deckName = "deck with this name is already exist";
         }
@@ -40,11 +45,7 @@ export const CreateDeckForm = () => {
         return errors;
       }}
       onSubmit={async (values) => {
-        let deckMap = await getDeckMap();
-
-        if (!deckMap) {
-          deckMap = {};
-        }
+        if (!deckMap) return;
 
         deckMap[values.deckName] = {
           sourceLanguage: values.sourceLanguage,
@@ -53,14 +54,18 @@ export const CreateDeckForm = () => {
           cards: [],
         };
 
-        await setDeckMap(deckMap);
+        await updateDeckMap(deckMap);
+
+        navigation.navigate("Deck", {
+          screen: "HomeDeckList",
+        });
       }}
       initialValues={{
         deckName: "",
         sourceLanguage: "",
         targetLanguage: "",
       }}>
-      {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+      {({ handleChange, handleBlur, handleSubmit, values }) => (
         <Container style={s.container}>
           <View style={s.title}>
             <Text style={{ fontSize: 30, fontFamily: font.Montserrat.bold, color: color.dimgrey }}>
@@ -80,11 +85,11 @@ export const CreateDeckForm = () => {
 
           <View style={s.inputBlock}>
             <Text style={s.inputLabel}>Select source language</Text>
-            <SelectCountry onSelect={handleChange("sourceLanguage")} />
+            <SelectCountry selectLocationType="main" onSelect={handleChange("sourceLanguage")} />
           </View>
           <View style={s.inputBlock}>
             <Text style={s.inputLabel}>Select target language</Text>
-            <SelectCountry onSelect={handleChange("targetLanguage")} />
+            <SelectCountry selectLocationType="other" onSelect={handleChange("targetLanguage")} />
           </View>
           <TouchableOpacity style={s.submit} onPress={() => handleSubmit()}>
             <Text style={{ fontFamily: font.Montserrat.bold, color: color.dimgrey, fontSize: 18 }}>Create</Text>
