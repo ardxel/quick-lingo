@@ -1,27 +1,56 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ICard } from "shared/models";
 import { color, font } from "shared/vars";
 import Checkbox from "expo-checkbox";
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 type Props = ICard & {
   onCheck: (value: boolean, index: number) => void;
   index: number;
   isChecked: boolean;
+  deckName: string;
 };
+
+const TRANSLATED_TEXT_LENGTH_LIMIT = 28;
 
 export const DeckTableRow: FC<Props> = (props) => {
   const [isChecked, setIsChecked] = useState(props.isChecked);
+  const navigator = useNavigation();
 
   useEffect(() => {
     setIsChecked(props.isChecked);
   }, [props.isChecked]);
 
+  const translatedText = useMemo(() => {
+    let text = props.translations[0];
+    let i = 1;
+    while (i < props.translations.length) {
+      if (text.length + props.translations[i].length <= TRANSLATED_TEXT_LENGTH_LIMIT) {
+        text += ", " + props.translations[i++];
+      } else {
+        text += "...";
+        break;
+      }
+    }
+    return text;
+  }, [props.translations]);
+
   return (
-    <View style={s.container}>
+    <TouchableOpacity
+      testID="card-row"
+      onPress={() => {
+        navigator.navigate("Card", {
+          cardId: props.cardId,
+          deckName: props.deckName,
+        });
+      }}
+      style={s.container}>
       <View style={s.checkboxCol}>
         <View style={s.chechBoxView}>
           <Checkbox
+            testID="card-row-checkbox"
             style={s.checkbox}
             value={isChecked}
             color={isChecked ? color.chocolate : undefined}
@@ -30,16 +59,17 @@ export const DeckTableRow: FC<Props> = (props) => {
                 props.onCheck(!prev, props.index);
                 return !prev;
               });
-            }}></Checkbox>
+            }}
+          />
         </View>
       </View>
       <View style={s.source}>
         <Text style={s.label}>{props.sourceText}</Text>
       </View>
       <View style={s.translated}>
-        <Text style={s.label}>{props.translations.join(", ")}</Text>
+        <Text style={s.label}>{translatedText}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -49,7 +79,7 @@ const s = StyleSheet.create({
     width: "100%",
     borderColor: color.chocolate,
     paddingHorizontal: 5,
-    paddingVertical: 6,
+    paddingVertical: 4,
   },
   checkboxCol: {
     width: "10%",

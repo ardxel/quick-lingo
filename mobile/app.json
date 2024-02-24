@@ -14,9 +14,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -33,9 +31,7 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "./assets/fonts"
-          ]
+          "fonts": ["./assets/fonts"]
         }
       ],
       "expo-localization"

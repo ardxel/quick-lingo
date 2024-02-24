@@ -12,4 +12,6 @@ export type ICard = {
   createdAt: Date | string;
 
   playCount: number;
+
+  cardId: string;
 };

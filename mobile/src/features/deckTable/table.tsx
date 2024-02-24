@@ -1,18 +1,17 @@
 import { FC, useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { IDeck, useLingoDeck } from "shared/models";
+import { useLingoDeck } from "shared/models";
 import { color } from "shared/vars";
 import { aggregateDeckCards } from "./aggregateDeckCards";
 import { DeckTableRow } from "./row";
 import { DeckTableMenu, DeckTableSortOption, sortByOption } from "./tableMenu";
 
 type Props = {
-  deck: IDeck;
   inputSearchCard: string;
   deckName: string;
 };
 
-const CARD_COUNT_PER_PAGE = 8;
+const CARD_COUNT_PER_PAGE = 10;
 
 export const DeckTable: FC<Props> = ({ inputSearchCard, deckName }) => {
   const { deck, deleteCards } = useLingoDeck(deckName);
@@ -31,7 +30,7 @@ export const DeckTable: FC<Props> = ({ inputSearchCard, deckName }) => {
         currentPage: page,
         sortBy: selectedSortOption,
         pageLimit: CARD_COUNT_PER_PAGE,
-        descreasingOrder: sortInDecreasingOrder,
+        decreasingOrder: sortInDecreasingOrder,
       }),
     [deck, page, sortInDecreasingOrder, selectedSortOption, inputSearchCard],
   );
@@ -62,9 +61,11 @@ export const DeckTable: FC<Props> = ({ inputSearchCard, deckName }) => {
         }}
       />
       <FlatList
+        contentContainerStyle={{ paddingVertical: 6 }}
         data={aggregatedCards}
         renderItem={({ item, index }) => (
           <DeckTableRow
+            deckName={deckName}
             {...item}
             index={index}
             isChecked={checked.includes(index)}

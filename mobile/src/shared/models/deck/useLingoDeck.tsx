@@ -19,33 +19,36 @@ export const useLingoDeck = (deckName: string) => {
 
   const addCard = async (card: ICard) => {
     if (!deck || !deckName) return;
+
     const isExist = Boolean(deck.cards.find((c) => c.sourceText === card.sourceText));
 
     if (isExist) return;
 
-    const deckMapCopy: typeof deckMap = JSON.parse(JSON.stringify(deckMap));
-    deckMapCopy[deckName].cards.push(card);
-
-    const updatedDeckMap = await update(deckMapCopy);
-
-    setDeck(updatedDeckMap[deckName]);
+    await updateDeck((deck) => {
+      deck.cards.push(card);
+      return deck;
+    });
   };
 
   const deleteCards = async (...cards: ICard[]) => {
     if (!deck || !deckName) return;
 
+    await updateDeck((deck) => {
+      deck.cards = deck.cards.filter((card) => !cards.find((c) => c.sourceText === card.sourceText));
+      return deck;
+    });
+  };
+
+  const updateDeck = async (callback: (deck: IDeck) => IDeck) => {
     const deckMapCopy: typeof deckMap = JSON.parse(JSON.stringify(deckMap));
+    const updatedDeck = callback(deckMapCopy[deckName]);
 
-    const updatedCards = deckMapCopy[deckName].cards.filter(
-      (card) => !cards.find((c) => c.sourceText === card.sourceText),
-    );
-
-    deckMapCopy[deckName].cards = updatedCards;
+    deckMapCopy[deckName] = updatedDeck;
 
     const updatedDeckMap = await update(deckMapCopy);
 
     setDeck(updatedDeckMap[deckName]);
   };
 
-  return { addCard, deck, deleteCards };
+  return { addCard, deck, deleteCards, updateDeck };
 };

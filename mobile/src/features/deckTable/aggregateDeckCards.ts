@@ -8,7 +8,7 @@ export const aggregateDeckCards = (
     currentPage: number;
     pageLimit: number;
     sortBy: (typeof sortByOption)[number];
-    descreasingOrder: boolean;
+    decreasingOrder: boolean;
   },
 ): ICard[] => {
   if (!cards) return [];
@@ -19,7 +19,7 @@ export const aggregateDeckCards = (
 
   result = filterByUserInput(result, opts.filterByText);
 
-  result = sortBySelectedOptions(result, opts.sortBy, opts.descreasingOrder);
+  result = sortBySelectedOptions(result, opts.sortBy, opts.decreasingOrder);
 
   return result;
 };

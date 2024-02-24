@@ -1,18 +1,88 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { DeckStackParamList } from "app/navigation/deck.stack";
-import { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import { DeckTable } from "features/deckTable";
+import { FC, useState } from "react";
+import { ActivityIndicator, Keyboard, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
+import uuid from "react-native-uuid";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
 import { ResponsePayloadTranslations, api } from "shared/api";
-import { IDeck, useLingoDeck } from "shared/models";
+import { useRenderForce } from "shared/hooks";
+import { useLingoDeck } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
-import { DeckTable } from "features/deckTable";
-import { Keyboard } from "react-native";
-import { useRenderForce } from "shared/hooks";
 
-type RequestTranslateBody = {
+type CreateCardTextInputProps = {
+  texts: string;
+  disabled: boolean;
+  isPending: boolean;
+  minTextLength: number;
+  translate: () => void;
+  setTexts: (texts: string) => void;
+};
+
+const CreateCardTextInput: FC<CreateCardTextInputProps> = (props) => {
+  return (
+    <View style={root.inputWithLabel}>
+      <Text style={root.label}>
+        Field for entering a new word.
+        <Text style={[root.label, { fontFamily: font.Montserrat.medium }]}>
+          {` (Min length: ${props.minTextLength})`}
+        </Text>
+      </Text>
+      <View style={root.inputView}>
+        <TextInput
+          placeholder="insert new text"
+          value={props.texts}
+          autoCapitalize="none"
+          onChangeText={(text) => props.setTexts(text)}
+          style={[root.input, props.disabled ? null : { borderTopRightRadius: 0, borderBottomRightRadius: 0 }]}
+        />
+        {props.disabled || props.isPending ? null : (
+          <TouchableHighlight
+            style={root.inputIconButton}
+            onPress={() => props.translate()}
+            disabled={props.disabled || props.isPending}>
+            <MDIcon
+              name="check"
+              size={25}
+              color={props.disabled ? "black" : color.chocolate}
+              style={[root.inputIcon]}
+            />
+          </TouchableHighlight>
+        )}
+        {props.isPending ? (
+          <View style={root.inputIconButton}>
+            <ActivityIndicator size={25} color={color.chocolate} />
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+};
+
+type SearchCardInputProps = {
+  input: string;
+  onChangeText: (text: string) => void;
+};
+
+const SearchCardInput: FC<SearchCardInputProps> = (props) => {
+  return (
+    <View style={root.inputWithLabel}>
+      <Text style={root.label}>Search card</Text>
+      <View style={root.inputView}>
+        <TextInput
+          placeholder="search card"
+          value={props.input}
+          onChangeText={(text) => props.onChangeText(text)}
+          style={root.input}
+        />
+      </View>
+    </View>
+  );
+};
+
+export type RequestTranslateBody = {
   sourceLanguageCode: string;
   targetLanguageCode: string;
   texts: string[];
@@ -44,7 +114,7 @@ const EditDeckScreen = ({ route }: EditDeckScreenProps) => {
       const response = await translateAsync({
         sourceLanguageCode: deck.sourceLanguage,
         targetLanguageCode: deck.targetLanguage,
-        texts: texts.split(" "),
+        texts: texts.trim().split(" "),
       });
 
       const translations = response.data.payload.translations.texts;
@@ -55,6 +125,7 @@ const EditDeckScreen = ({ route }: EditDeckScreenProps) => {
         expanded: false,
         createdAt: new Date(),
         playCount: 0,
+        cardId: uuid.v4() as string,
       });
     } catch (error) {
       console.log(error);
@@ -63,7 +134,7 @@ const EditDeckScreen = ({ route }: EditDeckScreenProps) => {
       renderTable();
     }
   };
-  console.log("TOSORTED: ", Array.prototype.toSorted);
+
   return (
     <Container>
       <View style={header.wrapper}>
@@ -76,52 +147,16 @@ const EditDeckScreen = ({ route }: EditDeckScreenProps) => {
       </View>
       <View style={root.container}>
         <View style={root.section}>
-          <View style={root.inputWithLabel}>
-            <Text style={root.label}>
-              Field for entering a new word.
-              <Text style={[root.label, { fontFamily: font.Montserrat.medium }]}>
-                {` (Min length: ${REQUEST_MIN_WORD_LENGTH})`}
-              </Text>
-            </Text>
-            <View style={root.inputView}>
-              <TextInput
-                placeholder="insert new text"
-                value={texts}
-                onChangeText={(text) => setTexts(text)}
-                style={[
-                  root.input,
-                  disableTranslateButton ? null : { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
-                ]}
-              />
-              {disableTranslateButton || isPending ? null : (
-                <TouchableHighlight
-                  style={root.inputIconButton}
-                  onPress={() => translate()}
-                  disabled={disableTranslateButton || isPending}>
-                  <MDIcon
-                    name="check"
-                    size={25}
-                    color={disableTranslateButton ? "black" : color.chocolate}
-                    style={[root.inputIcon]}
-                  />
-                </TouchableHighlight>
-              )}
-              {isPending ? (
-                <View style={root.inputIconButton}>
-                  <ActivityIndicator size={25} color={color.chocolate} />
-                </View>
-              ) : null}
-            </View>
-          </View>
-          <View style={root.inputView}>
-            <TextInput value={inputSearchCard} onChangeText={(text) => setInputSearchCard(text)} style={root.input} />
-          </View>
-          <DeckTable
-            // key={renderKey}
-            deck={deck || ([] as IDeck)}
-            deckName={route.params.editableDeckName}
-            inputSearchCard={inputSearchCard}
+          <CreateCardTextInput
+            translate={translate}
+            isPending={isPending}
+            disabled={disableTranslateButton}
+            texts={texts}
+            setTexts={(texts) => setTexts(texts)}
+            minTextLength={REQUEST_MIN_WORD_LENGTH}
           />
+          <SearchCardInput onChangeText={setInputSearchCard} input={inputSearchCard} />
+          <DeckTable key={renderKey} deckName={route.params.editableDeckName} inputSearchCard={inputSearchCard} />
         </View>
       </View>
     </Container>
@@ -155,13 +190,13 @@ const root = StyleSheet.create({
   section: {
     width: "100%",
     height: "100%",
-    rowGap: 30,
+    rowGap: 8,
   },
   inputView: {
     flexDirection: "row",
     position: "relative",
     width: "100%",
-    height: 50,
+    height: 45,
   },
   inputWithLabel: {
     rowGap: 10,

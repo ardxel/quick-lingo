@@ -2,18 +2,29 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLingoDeck } from "./useLingoDeck";
 import { renderHook, waitFor, act } from "@testing-library/react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { ICard } from "../card";
+import { IAppAsyncStorage } from "shared/store";
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
 );
 
-const mockLingoDeckMap = {
+const mockLingoDeckMap: IAppAsyncStorage["@decks"] = {
   deck: {
     cards: [],
     sourceLanguage: "ru",
     targetLanguage: "en",
     name: "deck",
   },
+};
+
+const mockLingoCard: ICard = {
+  translations: ["hello", "world"],
+  expanded: false,
+  sourceText: "Привет мир",
+  cardId: "randomId",
+  createdAt: "now",
+  playCount: 0,
 };
 
 const mockLingoDeckName = "deck";
@@ -47,12 +58,6 @@ describe("Test useLingoDeck hook", () => {
   });
 
   test("test addCard function", async () => {
-    const mockTranslationCard = {
-      translations: ["hello", "world"],
-      expanded: false,
-      sourceText: "привет мир",
-    };
-
     await AsyncStorage.setItem("@decks", JSON.stringify(mockLingoDeckMap));
 
     const render = renderUseLingoDeck();
@@ -61,13 +66,34 @@ describe("Test useLingoDeck hook", () => {
       expect(render.result.current.deck).not.toBeNull();
     });
 
-    await act(() => {
-      render.result.current.addCard({ ...mockTranslationCard });
+    await act(async () => {
+      await render.result.current.addCard({ ...mockLingoCard });
     });
 
     await waitFor(() => {
       expect(render.result.current.deck?.cards).toHaveLength(1);
-      expect(render.result.current.deck?.cards[0]).toEqual(mockTranslationCard);
+      expect(render.result.current.deck?.cards[0]).toEqual(mockLingoCard);
+    });
+  });
+
+  test("test deleteCards function", async () => {
+    const mockDeckMap = mockLingoDeckMap;
+    mockDeckMap.deck.cards.push(mockLingoCard);
+
+    await AsyncStorage.setItem("@decks", JSON.stringify(mockDeckMap));
+
+    const render = renderUseLingoDeck();
+
+    await waitFor(() => {
+      expect(render.result.current.deck).toEqual(mockDeckMap.deck);
+    });
+
+    await act(async () => {
+      render.result.current.deleteCards(mockLingoCard);
+    });
+
+    await waitFor(() => {
+      expect(render.result.current.deck?.cards).toHaveLength(0);
     });
   });
 });
