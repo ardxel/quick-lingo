@@ -2,15 +2,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, NavigatorScreenParams } from "@react-navigation/native";
 import { Pressable, Text, View } from "react-native";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
-import PlaygroundScreen from "screens/playground";
 import SettingScreen from "screens/settings";
 import { color } from "shared/vars";
 import { BottomTabRouteObject } from "types";
 import { DeckStack, DeckStackParamList } from "./deck.stack";
+import { PlaygroundStack, PlaygroundStackList } from "./playground.stack";
 
 export type RootTabParamList = {
   Deck: NavigatorScreenParams<DeckStackParamList>;
-  Play: undefined;
+  Play: NavigatorScreenParams<PlaygroundStackList>;
   Settings: undefined;
 };
 
@@ -23,7 +23,7 @@ const routes: Array<BottomTabRouteObject<RootTabParamList>> = [
   },
   {
     name: "Play",
-    component: PlaygroundScreen,
+    component: PlaygroundStack,
   },
   {
     name: "Settings",
@@ -65,6 +65,10 @@ export const HomeTab = () => {
                   });
 
                   if (!isFocused && !event.defaultPrevented) {
+                    if (route.name === "Play") {
+                      navigation.navigate("Play", { screen: "HomePlayground" });
+                      return;
+                    }
                     navigation.navigate(route.name, route.params);
                   }
                 };

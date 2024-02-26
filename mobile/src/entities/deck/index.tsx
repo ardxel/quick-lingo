@@ -16,7 +16,11 @@ export const DeckItem: FC<Props> = ({ deck, removeMe }) => {
   const navigateToEditDeckScreen = () => navigate("EditDeck", { editableDeckName: deck.name });
 
   return (
-    <TouchableOpacity style={s.container}>
+    <TouchableOpacity
+      style={s.container}
+      onPress={() => {
+        navigate("Play", { screen: "Playground", params: { deckName: deck.name } });
+      }}>
       <>
         <View>
           <View style={{ flexDirection: "row", alignItems: "flex-end", columnGap: 6 }}>
