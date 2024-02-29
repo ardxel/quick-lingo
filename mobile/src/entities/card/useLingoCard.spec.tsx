@@ -4,6 +4,7 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { IAppAsyncStorage } from "shared/store";
 import { ICard } from "./card.interface";
 import { useLingoCard } from "./useLingoCard";
+import { copy } from "shared/utils/lib/copy";
 
 const mockLingoDeckMap: IAppAsyncStorage["@decks"] = {
   deck: {
@@ -11,16 +12,18 @@ const mockLingoDeckMap: IAppAsyncStorage["@decks"] = {
     sourceLanguage: "ru",
     targetLanguage: "en",
     name: "deck",
+    lastPlayed: new Date().toString(),
   },
 };
 
 const mockLingoCard: ICard = {
   translations: ["hello", "world"],
-  expanded: false,
   sourceText: "Привет мир",
   cardId: "cardId",
   createdAt: "now",
   playCount: 0,
+  synonyms: [],
+  examples: [],
 };
 
 const mockLingoDeckName = mockLingoDeckMap.deck.name;
@@ -31,7 +34,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 
 describe("Text useLingoCard hook", () => {
   const getMockLingoDeckMapWithLingoCard = () => {
-    const deckMap: IAppAsyncStorage["@decks"] = JSON.parse(JSON.stringify(mockLingoDeckMap));
+    const deckMap: IAppAsyncStorage["@decks"] = copy(mockLingoDeckMap, true, false);
     deckMap.deck.cards.push({ ...mockLingoCard });
     return JSON.stringify(deckMap);
   };

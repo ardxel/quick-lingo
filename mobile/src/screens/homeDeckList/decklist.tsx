@@ -1,10 +1,9 @@
-import { DeckItem } from "entities/deck";
+import { DeckItem, useLingoDeckMap } from "entities/deck";
 import { useMemo } from "react";
 import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
-import { useLingoDeckMap } from "shared/models";
 import { Container } from "shared/ui";
 import { color } from "shared/vars";
-import { useDeckScreenContext } from ".";
+import { useDeckScreenContext } from "./context";
 
 export const HomeDeckScreenDeckList = () => {
   const { deckMap, removeDeck } = useLingoDeckMap();

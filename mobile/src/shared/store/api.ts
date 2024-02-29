@@ -19,7 +19,7 @@ class AsyncStorageApi {
 
   public async set<T>(key: string, value: T): Promise<void> {
     try {
-      let str = this.stringify(value);
+      const str = this.stringify(value);
 
       await this.asyncStorage.setItem(key, str);
     } catch (error) {
@@ -37,7 +37,7 @@ class AsyncStorageApi {
 
   public async merge<T>(key: string, value: T) {
     try {
-      let str = this.stringify(value);
+      const str = this.stringify(value);
 
       await AsyncStorage.mergeItem(key, str);
     } catch (error) {

@@ -7,12 +7,21 @@ export const header = StyleSheet.create({
     top: 0,
     width: "100%",
     flexDirection: "row",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 20,
+    height: 100,
   },
-  counter: {
-    alignSelf: "flex-end",
+  buttonReload: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 8,
+    borderWidth: 3,
+    overflow: "hidden",
+    borderRadius: 8,
+    backgroundColor: color.whitesmoke,
   },
+  counter: {},
   counterParagraph: {
     fontFamily: font.Montserrat.medium,
     fontSize: 30,
@@ -21,15 +30,18 @@ export const header = StyleSheet.create({
 
 export const answer = StyleSheet.create({
   displayAnswer: {
-    height: "60%",
+    height: "55%",
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
     borderRadius: 8,
     borderColor: color.chocolate,
+    position: "relative",
+    overflow: "hidden",
   },
   translatedText: {
+    textAlign: "left",
     fontFamily: font.Montserrat.regular,
     fontSize: 22,
   },
@@ -84,5 +96,27 @@ export const root = StyleSheet.create({
     fontFamily: font.Montserrat.medium,
     fontSize: 26,
     textAlign: "center",
+  },
+  helpMenu: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  helpButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 4,
+    backgroundColor: color.burlywood,
+    // borderTopLeftRadius: 8,
+    // borderTopRightRadius: 8,
+    borderRadius: 10,
+    height: 40,
+    margin: 4,
+    elevation: 10,
+  },
+  helpButtonText: {
+    fontFamily: font.Montserrat.regular,
+    fontSize: 18,
   },
 });

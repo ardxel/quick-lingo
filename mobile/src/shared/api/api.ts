@@ -19,7 +19,7 @@ class Api {
 
   private createInstance() {
     const config: CreateAxiosDefaults = {
-      timeout: 5000,
+      timeout: 10000,
       baseURL: TRANSLATE_API_URL_V1,
     };
 

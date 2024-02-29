@@ -1,6 +1,7 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { DeckStackParamList } from "app/navigation/deck.stack";
+import { useLingoDeck } from "entities/deck";
 import { DeckTable } from "features/deckTable";
 import { FC, useState } from "react";
 import { ActivityIndicator, Keyboard, StyleSheet, Text, TextInput, TouchableHighlight, View } from "react-native";
@@ -8,7 +9,6 @@ import uuid from "react-native-uuid";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
 import { ResponsePayloadTranslations, api } from "shared/api";
 import { useRenderForce } from "shared/hooks";
-import { useLingoDeck } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
 
@@ -117,12 +117,11 @@ const EditDeckScreen = ({ route }: EditDeckScreenProps) => {
         texts: texts.trim().split(" "),
       });
 
-      const translations = response.data.payload.translations.texts;
-
       addCard({
         sourceText: texts,
-        translations: translations,
-        expanded: false,
+        translations: response.data.payload.translations,
+        examples: response.data.payload.examples || [],
+        synonyms: response.data.payload.synonyms || [],
         createdAt: new Date(),
         playCount: 0,
         cardId: uuid.v4() as string,

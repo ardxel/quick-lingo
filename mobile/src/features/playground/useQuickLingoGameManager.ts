@@ -1,35 +1,67 @@
-import { useEffect, useRef, useState } from "react";
-import { ICard, useLingoDeck } from "shared/models";
+import { useFocusEffect } from "@react-navigation/native";
+import { ICard } from "entities/card";
+import { useLingoDeck } from "entities/deck";
+import { useLingoSettings } from "entities/settings";
+import { useCallback, useRef, useState } from "react";
+import { CardSort } from "shared/utils";
 
 type QuickLingoGameManager = {
   popCard: () => void;
-  currentCard: ICard | null;
+
+  currentCard: ICard;
+
   hasNext: boolean;
+
   cardsCount: number;
+
   currentCardIndex: number;
+
+  reloadCards: () => void;
 };
 
+// type QuickLingoGameState = "start" | "process" | "end";
+
 export const useQuickLingoGameManager = (lingoDeckName: string): QuickLingoGameManager => {
-  const { deck, updateDeck } = useLingoDeck(lingoDeckName);
+  const { settings, isLoading: isSettingsLoading, reload: reloadSettings } = useLingoSettings();
+  const { deck, updateDeck, isLoading: isDeckLoading } = useLingoDeck(lingoDeckName);
+
   const [stack, setStack] = useState<ICard[]>([]);
-  const lingoDeckNamRef = useRef<string | null>();
+  const [cardsCount, setCardsCount] = useState<number>(0);
+  const deckNameInGame = useRef<string | null>();
 
-  useEffect(() => {
-    if (!deck) return;
+  const isLoading = [isSettingsLoading, isDeckLoading].some(Boolean);
 
-    if (!lingoDeckNamRef.current || lingoDeckNamRef.current !== lingoDeckName) {
-      lingoDeckNamRef.current = lingoDeckName;
-      setStack(deck.cards);
-    }
-  }, [deck]);
-
-  const currentCard = stack.length ? stack[stack.length - 1] : null;
-
+  const currentCard = stack[stack.length - 1];
   const hasNext = Boolean(stack.length);
-
-  const cardsCount = deck?.cards.length || 0;
-
   const currentCardIndex = stack.length;
+
+  const reloadCards = () => {
+    if (!deck || !settings || isLoading) return;
+    reloadSettings();
+
+    const sorted = CardSort.sort(deck.cards, settings.sortTypeInSession);
+    const sliced = settings.cardsInSession === "all" ? sorted : sorted.slice(0, settings.cardsInSession + 1);
+
+    setCardsCount(sliced.length);
+    setStack(sliced);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!deck || isLoading) return;
+
+      const renderNewGame =
+        !deckNameInGame.current ||
+        deckNameInGame.current !== lingoDeckName ||
+        stack.length === 0 ||
+        (lingoDeckName === deckNameInGame.current && stack.length === 0);
+
+      if (renderNewGame) {
+        deckNameInGame.current = lingoDeckName;
+        reloadCards();
+      }
+    }, [deck, lingoDeckName, isLoading]),
+  );
 
   const popCard = () => {
     if (!hasNext) return;
@@ -53,5 +85,6 @@ export const useQuickLingoGameManager = (lingoDeckName: string): QuickLingoGameM
     hasNext,
     cardsCount,
     currentCardIndex,
+    reloadCards,
   };
 };

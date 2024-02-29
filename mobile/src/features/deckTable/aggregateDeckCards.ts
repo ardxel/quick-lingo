@@ -1,5 +1,6 @@
-import { ICard } from "shared/models";
+import { ICard } from "entities/card";
 import { sortByOption } from "./tableMenu";
+import { CardSort } from "shared/utils";
 
 export const aggregateDeckCards = (
   cards: ICard[] | undefined,
@@ -19,7 +20,7 @@ export const aggregateDeckCards = (
 
   result = filterByUserInput(result, opts.filterByText);
 
-  result = sortBySelectedOptions(result, opts.sortBy, opts.decreasingOrder);
+  result = CardSort.sort(result, opts.sortBy, opts.decreasingOrder);
 
   return result;
 };
@@ -44,54 +45,3 @@ const paginateCards = (cards: ICard[], currentPage: number, pageLimit: number): 
 
   return currentCards;
 };
-
-const sortBySelectedOptions = (
-  cards: ICard[],
-  selectedOption: (typeof sortByOption)[number],
-  decreasingOrder: boolean,
-): ICard[] => {
-  switch (selectedOption) {
-    case "Alphabet":
-      return CardSort.sortBySourceText(cards, decreasingOrder);
-    case "New":
-      return CardSort.sortByCreatingDate(cards, decreasingOrder);
-    case "Play count":
-      return CardSort.sortByPlayCount(cards, decreasingOrder);
-    case "Useful":
-      return CardSort.sortByUseful(cards, decreasingOrder);
-    default:
-      return cards;
-  }
-};
-
-class CardSort {
-  static sortBySourceText(cards: ICard[], decreasingOrder: boolean) {
-    return cards.sort((card1, card2) => {
-      return decreasingOrder
-        ? card2.sourceText.localeCompare(card1.sourceText)
-        : card1.sourceText.localeCompare(card2.sourceText);
-    });
-  }
-  static sortByCreatingDate(cards: ICard[], decreasingOrder: boolean) {
-    return cards.sort((card1, card2) => {
-      const time1 = new Date(card1.createdAt).getTime();
-      const time2 = new Date(card2.createdAt).getTime();
-
-      return decreasingOrder ? time2 - time1 : time1 - time2;
-    });
-  }
-
-  static sortByPlayCount(cards: ICard[], decreasingOrder: boolean) {
-    return cards.sort((card1, card2) => {
-      return decreasingOrder ? card2.playCount - card1.playCount : card1.playCount - card2.playCount;
-    });
-  }
-
-  static sortByUseful(cards: ICard[], decreasingOrder: boolean) {
-    return cards.sort((card1, card2) => {
-      return decreasingOrder
-        ? card2.translations.length - card1.translations.length
-        : card1.translations.length - card2.translations.length;
-    });
-  }
-}

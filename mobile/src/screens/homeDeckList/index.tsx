@@ -3,8 +3,9 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootTabParamList } from "app/navigation";
 import { DeckStackParamList } from "app/navigation/deck.stack";
-import { FC, createContext, useCallback, useContext, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import { Container } from "shared/ui";
+import { DeckScreenContext } from "./context";
 import { HomeDeckScreenDeckList } from "./decklist";
 import { HomeDeckListHeader } from "./header";
 
@@ -12,13 +13,6 @@ type HomeDeckListProps = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList>,
   NativeStackScreenProps<DeckStackParamList>
 >;
-
-type DeckScreenContextProps = {
-  onSearhDeckInput: (userInput: string) => void;
-  searchDeckInput: string;
-};
-
-const DeckScreenContext = createContext<DeckScreenContextProps>({} as DeckScreenContextProps);
 
 const HomeDeckListScreen: FC<HomeDeckListProps> = ({ navigation }) => {
   const [searchDeckInput, setSearchDeckInput] = useState<string>("");
@@ -35,5 +29,4 @@ const HomeDeckListScreen: FC<HomeDeckListProps> = ({ navigation }) => {
   );
 };
 
-export const useDeckScreenContext = () => useContext(DeckScreenContext);
 export default HomeDeckListScreen;

@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
+import { useLingoDeckMap } from "entities/deck";
 import { SelectCountry } from "features/language";
 import { Formik } from "formik";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { ResponsePayloadLanguageList, api } from "shared/api";
-import { useLingoDeckMap } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
 
@@ -51,6 +51,7 @@ export const CreateDeckForm = () => {
           sourceLanguage: values.sourceLanguage,
           targetLanguage: values.targetLanguage,
           name: values.deckName,
+          lastPlayed: new Date(),
           cards: [],
         };
 

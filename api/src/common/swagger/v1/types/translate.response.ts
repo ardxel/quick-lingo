@@ -1,21 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ArrayNotEmpty, IsArray, IsString } from 'class-validator';
+import { IsArray } from 'class-validator';
 
 class ResponseTranslation {
-    @IsString()
+    @IsArray()
     @ApiProperty()
-    text: string;
-
-    @IsString()
-    @ApiProperty()
-    detectedLanguageCode?: string;
+    texts: string;
 }
 
 export class SwaggerResponseTranslate {
     @IsArray()
-    @ArrayNotEmpty()
     @Type(() => ResponseTranslation)
     @ApiProperty({ type: [ResponseTranslation] })
-    translations: ResponseTranslation[];
+    translations: ResponseTranslation;
 }

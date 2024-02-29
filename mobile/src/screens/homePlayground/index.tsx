@@ -1,11 +1,11 @@
 import { NavigationProp, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { RootTabParamList } from "app/navigation";
+import { useLingoDeckMap } from "entities/deck";
 import { useCallback, useMemo, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
 import MDIcon from "react-native-vector-icons/MaterialIcons";
-import { useLingoDeckMap } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
 

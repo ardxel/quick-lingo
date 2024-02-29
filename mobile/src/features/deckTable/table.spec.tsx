@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { render, waitFor } from "@testing-library/react-native";
-import { ICard } from "shared/models";
 import { IAppAsyncStorage } from "shared/store";
 import { DeckTable } from "./table";
+import { ICard } from "entities/card";
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock"),
@@ -20,20 +20,22 @@ const mockLingoDeckMap: IAppAsyncStorage["@decks"] = {
 
 const mockLingoCard1: ICard = {
   translations: ["текст1"],
-  expanded: false,
   sourceText: "text1",
   cardId: "1",
   createdAt: new Date().toString(),
   playCount: 0,
+  examples: [],
+  synonyms: [],
 };
 
 const mockLingoCard2: ICard = {
   translations: ["пример"],
-  expanded: false,
   sourceText: "example",
   cardId: "1",
   createdAt: new Date().toString(),
   playCount: 0,
+  examples: [],
+  synonyms: [],
 };
 
 describe("Test table in deck edit screen", () => {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
 import { color, font } from "shared/vars";
-import { useDeckScreenContext } from "./index";
+import { useDeckScreenContext } from "./context";
 
 export const HomeDeckListHeader = () => {
   const [inputSearchShow, setInputSearchShown] = useState<boolean>(false);

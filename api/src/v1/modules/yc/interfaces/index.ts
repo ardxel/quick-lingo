@@ -1,2 +1,2 @@
 export * from './yandex-cloud';
-export * from './translate-gpt.response';
+export * from './translate.response.inteface';

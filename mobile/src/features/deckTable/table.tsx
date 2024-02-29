@@ -1,10 +1,10 @@
 import { FC, useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
-import { useLingoDeck } from "shared/models";
 import { color } from "shared/vars";
 import { aggregateDeckCards } from "./aggregateDeckCards";
 import { DeckTableRow } from "./row";
 import { DeckTableMenu, DeckTableSortOption, sortByOption } from "./tableMenu";
+import { useLingoDeck } from "entities/deck";
 
 type Props = {
   inputSearchCard: string;

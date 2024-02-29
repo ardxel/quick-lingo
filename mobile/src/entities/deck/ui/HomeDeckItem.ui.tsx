@@ -2,8 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import React, { FC } from "react";
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
-import { IDeck } from "shared/models";
 import { color, font } from "shared/vars";
+import { IDeck } from "../deck.interface";
 
 type Props = {
   deck: IDeck;

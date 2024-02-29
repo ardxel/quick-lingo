@@ -1,10 +1,10 @@
 import { FC, useEffect, useMemo, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ICard } from "shared/models";
 import { color, font } from "shared/vars";
 import Checkbox from "expo-checkbox";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { ICard } from "entities/card";
 
 type Props = ICard & {
   onCheck: (value: boolean, index: number) => void;

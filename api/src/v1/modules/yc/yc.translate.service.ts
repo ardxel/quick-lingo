@@ -1,10 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { AppEnvConfig } from 'common/interfaces';
 import { TranslateDTO } from './dto';
-import { YCResponseSupportedLanguageList, YCResponseTranslate, YcBadResponse } from './interfaces';
+import {
+    ResponsePayloadTranslate,
+    YCResponseSupportedLanguageList,
+    YCResponseTranslate,
+    YcBadResponse,
+} from './interfaces';
 import { YcConfigService } from './yc.config.service';
 
 @Injectable()
@@ -23,7 +28,7 @@ export class YcTranslateService {
     /**
      * @see {@link https://cloud.yandex.ru/ru/docs/translate/api-ref/Translation/translate}
      */
-    public async translate(dto: TranslateDTO): Promise<YCResponseTranslate> {
+    public async translate(dto: TranslateDTO): Promise<ResponsePayloadTranslate> {
         try {
             const [translateApiUrl, body, config] = this.prepareRequest('translate');
 
@@ -33,7 +38,14 @@ export class YcTranslateService {
 
             const response = await this.httpService.axiosRef.post<YCResponseTranslate>(translateApiUrl, body, config);
 
-            return response.data;
+            const translations = response.data.translations.map(({ text }) => text).flat();
+
+            return {
+                translations: translations,
+                synonyms: [],
+                sourceText: dto.texts.join(' '),
+                examples: [],
+            };
         } catch (error: AxiosError | any) {
             if (this.isYandexException(error)) {
                 this.handleYandexException(error);
@@ -103,6 +115,6 @@ export class YcTranslateService {
      */
     private async handleYandexException(error: AxiosError<YcBadResponse>) {
         // TODO: write some code
-        throw new HttpException(error.response, error.response.data.code);
+        this._logger.debug(error);
     }
 }

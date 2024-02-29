@@ -1,9 +1,10 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 import { DeckStackParamList } from "app/navigation/deck.stack";
+import { useLingoCard } from "entities/card";
+import { useLingoDeck } from "entities/deck";
 import { FC, useRef, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import MDIcon from "react-native-vector-icons/MaterialIcons";
-import { useLingoCard, useLingoDeck } from "shared/models";
 import { Container } from "shared/ui";
 import { color, font } from "shared/vars";
 

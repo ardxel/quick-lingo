@@ -1,31 +1,34 @@
-import { ICard } from "shared/models";
+import { ICard } from "entities/card";
 import { aggregateDeckCards } from "./aggregateDeckCards";
 
 describe("test aggreagateDeckCards", () => {
   const cards: ICard[] = [
     {
       translations: ["текст1"],
-      expanded: false,
       sourceText: "text1",
       cardId: "0",
       createdAt: new Date().toString(),
       playCount: 0,
+      examples: ["test1", "test2", "test3"],
+      synonyms: [],
     },
     {
       translations: ["пример"],
-      expanded: false,
       sourceText: "example",
       cardId: "1",
       createdAt: new Date().toString(),
       playCount: 1,
+      examples: ["test1", "test2", "test3"],
+      synonyms: [],
     },
     {
       translations: ["тест"],
-      expanded: false,
       sourceText: "test",
       cardId: "2",
       createdAt: new Date().toString(),
       playCount: 2,
+      examples: ["test1", "test2", "test3"],
+      synonyms: [],
     },
   ];
 

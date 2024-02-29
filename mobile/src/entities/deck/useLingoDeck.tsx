@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { ICard } from "../card";
 import { IDeck } from "./deck.interface";
 import { useLingoDeckMap } from "./useLingoDeckMap";
+import { copy } from "shared/utils";
 
-/**
- * @warning very experimental
- */
 export const useLingoDeck = (deckName: string) => {
   const { deckMap, update, isLoading } = useLingoDeckMap();
   const [deck, setDeck] = useState<IDeck | null>(null);
@@ -40,7 +38,7 @@ export const useLingoDeck = (deckName: string) => {
   };
 
   const updateDeck = async (callback: (deck: IDeck) => IDeck) => {
-    const deckMapCopy: typeof deckMap = JSON.parse(JSON.stringify(deckMap));
+    const deckMapCopy = copy(deckMap);
     const updatedDeck = callback(deckMapCopy[deckName]);
 
     deckMapCopy[deckName] = updatedDeck;
@@ -50,5 +48,5 @@ export const useLingoDeck = (deckName: string) => {
     setDeck(updatedDeckMap[deckName]);
   };
 
-  return { addCard, deck, deleteCards, updateDeck };
+  return { addCard, deck, deleteCards, updateDeck, isLoading };
 };

@@ -1,7 +1,9 @@
 export type YcGptAlternative = {
-    message: string;
-    role: 'system' | 'assistant' | 'user';
-    text: string;
+    message: {
+        role: 'system' | 'assistant' | 'user';
+        text: string;
+    };
+    status: string;
 };
 
 export type YcGptResponseTextGeneration = {

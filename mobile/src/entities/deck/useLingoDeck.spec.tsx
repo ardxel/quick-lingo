@@ -20,11 +20,12 @@ const mockLingoDeckMap: IAppAsyncStorage["@decks"] = {
 
 const mockLingoCard: ICard = {
   translations: ["hello", "world"],
-  expanded: false,
   sourceText: "Привет мир",
   cardId: "randomId",
   createdAt: "now",
   playCount: 0,
+  synonyms: [],
+  examples: [],
 };
 
 const mockLingoDeckName = "deck";
